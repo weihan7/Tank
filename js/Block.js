@@ -1,29 +1,25 @@
-export default class Block {
-    constructor(x = 0, y = 0, width = Config.blockSize, height = Config.blockSize, imgSrc = '/assets/grass.png') {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.imgSrc = imgSrc;
-        // 把图片画到画布上，就必须有图片对象
-        this.image = new Image();
-        this.image.src = this.imgSrc;
-        // 定义一个状态，表示这个图片是否加载完成
-        this.isReady = false;
-        // 要等图片加载过来才可以画到画布
-        this.image.onload = ()=>{
-          // 这个事件时告诉画布，图片加载完成，可以画了
-          this.isReady = true;
-        }
-    }
+import Area from "./Area.js";
+import Config from './Config.js';
+import Status from "./Status.js";
 
-        // 给方块对象，添加一个渲染的方法，让他可以出现在页面上
-    render(context){
-        // context 对象是一个画笔对象，可以用来画东西    
-        // 先判断一下图片是否加载完成了
-        if(this.isReady){
-        // context.drawImage(图片对象, x坐标, y坐标, 图片宽度, 图片高度);
-        context.drawImage(this.image, this.x, this.y, this.width, this.height);
-        }    
+
+// 定义一个格子对象，描述游戏中的各种方块格子
+export default class Block extends Area {
+  constructor(x = 0, y = 0, width = Config.blockSize, height = Config.blockSize, imgUrl = Config.blockDefaultImageUrl) {
+    super(x, y, width, height);
+    this.imageUrl = imgUrl;
+    this.image = new Image();
+    this.image.src = this.imageUrl;
+    this.isReady = false; // 定义一个是否准备好的状态，当图片加载回来的时候设置为true
+    this.status = Status.alive;
+    this.image.onload = () => {
+      // 图片加载完毕了
+      this.isReady = true;
     }
+  }
+  // 渲染到页面上的方法
+  render(context) {
+    // 当图片准备好了之后再画出来
+    this.isReady && context.drawImage(this.image, this.x, this.y, this.width, this.height);
+  }
 }
